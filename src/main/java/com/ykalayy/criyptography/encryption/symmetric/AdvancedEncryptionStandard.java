@@ -9,42 +9,33 @@ import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.util.Base64;
 
-public class DataEncryptionStandard implements CryptoAlgorithm {
+public class AdvancedEncryptionStandard implements CryptoAlgorithm {
 
+    private final Cipher encryptionCipher;
+    private final Cipher decryptionCipher;
 
-    private Cipher encryptionCipher;
-    private Cipher decryptionCipher;
-    private IvParameterSpec ivParameterSpec;
+    public AdvancedEncryptionStandard(SecretKey secretKey, byte[] iv) throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidAlgorithmParameterException, InvalidKeyException {
 
-
-    public DataEncryptionStandard(SecretKey secretKey, byte[] iv) {
-
-        // 64 bit block
-        if(iv.length != 8) {
-            throw new IllegalArgumentException("IV block should be 8 bytes");
+        // 128 bit block
+        if(iv.length != 16) {
+            throw new IllegalArgumentException("IV block should be 16 bytes");
         }
 
-        try {
-            encryptionCipher = Cipher.getInstance("DES/CBC/PKCS5Padding");
-            decryptionCipher = Cipher.getInstance("DES/CBC/PKCS5Padding");
+        // Block by Block
+        // 1-2-3-4 - (XOR)
+        this.encryptionCipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
+        this.decryptionCipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
 
-            // Initialization vector creation
-            ivParameterSpec = new IvParameterSpec(iv);
+        IvParameterSpec ivParameterSpec = new IvParameterSpec(iv);
 
-            decryptionCipher.init(Cipher.DECRYPT_MODE, secretKey, ivParameterSpec);
-            encryptionCipher.init(Cipher.ENCRYPT_MODE, secretKey, ivParameterSpec);
-
-        } catch (NoSuchAlgorithmException | NoSuchPaddingException | InvalidAlgorithmParameterException |
-                 InvalidKeyException e) {
-            throw new RuntimeException(e);
-        }
+        this.encryptionCipher.init(Cipher.ENCRYPT_MODE, secretKey, ivParameterSpec);
+        this.decryptionCipher.init(Cipher.DECRYPT_MODE, secretKey, ivParameterSpec);
     }
 
     @Override
     public String encrypt(String plainText, Object key) {
-
         if(key != null) {
-            throw new IllegalArgumentException("Key is not supported for DES");
+            throw new IllegalArgumentException("Key is not supported for AES implementation");
         }
 
         byte[] plainTextAsyByte = plainText.getBytes();
@@ -65,7 +56,7 @@ public class DataEncryptionStandard implements CryptoAlgorithm {
     @Override
     public String deCrypt(String cipherText, Object key) {
         if(key != null) {
-            throw new IllegalArgumentException("Key is not supported for DES");
+            throw new IllegalArgumentException("Key is not supported for AES implementation");
         }
 
         byte[] cipherTextAsByte = Base64.getDecoder().decode(cipherText.getBytes());
