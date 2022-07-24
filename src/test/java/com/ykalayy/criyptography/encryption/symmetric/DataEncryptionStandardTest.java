@@ -18,7 +18,6 @@ public class DataEncryptionStandardTest {
     @Test
     void testEncryption() throws NoSuchAlgorithmException {
 
-        KeyGenerator.getInstance()
         SecretKey secretKey = KeyGenerator.getInstance("DES").generateKey();
         byte[] iv = new byte[8];
         secureRandom.nextBytes(iv);
