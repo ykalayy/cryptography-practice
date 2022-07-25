@@ -3,9 +3,9 @@ package com.ykalayy.criyptography.hashing;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
-public final class HashDigest {
+public class MD5 {
 
-    private static final String HASH_ALGORITHM = "SHA-256";
+    private static final String HASH_ALGORITHM = "MD5";
     private static final MessageDigest MESSAGE_DIGEST;
 
     static {
@@ -16,11 +16,7 @@ public final class HashDigest {
         }
     }
 
-    private HashDigest() {
-    }
-
-    public static byte[] hashString(final String input) {
-        byte[] inputStringAsByte = input.getBytes();
-        return MESSAGE_DIGEST.digest(inputStringAsByte);
+    public static String digest(String message) {
+        return new String(MESSAGE_DIGEST.digest(message.getBytes()));
     }
 }
